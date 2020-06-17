@@ -10,3 +10,7 @@ app = Flask(__name__)
 @app.route("/manegiment")
 def manegiment():
     return render_template("Manegiment_Vendingmachine.html")
+
+@app.route("/")
+def buy_order():
+    return render_template("Vendingmachine_buy.html")

@@ -1,14 +1,55 @@
 <!DOCTYPE html>
 <html lang="ja">
     <head>
+    <style type="text">
+        table, td, th {
+            border: solid black 1px;
+        }
+        table {
+            width: 200px;
+        }
+    </style>
     <title>
     <meta charset="UTF-8">
         自動販売機　管理画面
     </title>
     </head>
-    
     <body>
-        
+        <!-- hr:線をひく-->
+        <hr>
+        <font size="5">
+        <b><p1>新商品追加</p1></b>
+        </font>
+        <form>
+            <label for="order_name">名前：</label>
+            <input name="order_name">
+            <br><label for="price">値段：</label>
+            <input name="price">
+            <br><label for="order_number">個数：</label>
+            <input name="order_number"> 
+            
+            <!-- ファイル選択 -->
+
+            <!-- セレクトボックスの指定 -->
+            <br><select name = "PublicPrivate">
+                <option value="公開">公開</option>
+                <option value="非公開">非公開</option>
+            </select>
+
+            <!-- 商品追加ボタン -->
+            <br><input type="submit" value="■ □ ■ □ ■ 商品追加 ■ □ ■ □ ■">
+        </form>
+        <hr>
+        <font size="5">
+        <b><p>商品情報　変更</p></b>
+        </font>
+        商品一覧
+        {% for item in goods %}
+        <tr>
+             <td> {{ item.name }} </td>
+             <td>{{ item.price }}</td>
+        </tr>
+        {% endfor %}
     </body>
 
 </html>

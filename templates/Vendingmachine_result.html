@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <title>
+        <meta charset="UTF-8">
+        <font size="4">
+            自動販売機　結果
+        </font>
+    </title>
+    <body>
+        <font size="4">
+            <h1>自動販売機　結果</h1>
+        </font>
+
+        <!-- 画像ファイルを読み込む -->
+
+        {% if buy_order %}    
+            <p>がしゃん！ 【{{ buy_order }}】 が買えました！</p>
+        {% endif %}
+        {% if change %}
+            <p>お釣りは 【{{ change }}】 です</p>
+        {% endif %}
+
+        <button type="button" onclick="history.back()">戻る</button>
+
+    </body>
+</html>

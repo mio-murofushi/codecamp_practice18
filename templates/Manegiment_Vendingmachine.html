@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
     <head>
-    <style type="text">
-        table, td, th {
-            border: solid black 1px;
-        }
-        table {
-            width: 200px;
-        }
-    </style>
+        <style type="text/css">
+            table, td, th {
+                border: solid black 1px;
+            }
+            table {
+                width: 200px;
+            }
+        </style>
     <title>
     <meta charset="UTF-8">
         自動販売機　管理画面
@@ -43,13 +43,24 @@
         <font size="5">
         <b><p>商品情報　変更</p></b>
         </font>
-        商品一覧
-        {% for item in goods %}
+        <h1>商品一覧</h1>
+        <table>
         <tr>
-             <td> {{ item.name }} </td>
+            <th>商品名</th>
+            <th>価格</th>
+            <th>在庫数</th>
+            <th>ステータス</th>
+        </tr> 
+
+        {% for item in order_manegiment %}
+        <tr>
+             <td> {{ item.drink_name }} </td>
              <td>{{ item.price }}</td>
+             <td>{{ item.drink_number }}</td>
+             <td>{{ item.publicprivate }}</td>
         </tr>
         {% endfor %}
+        </table>
     </body>
 
 </html>

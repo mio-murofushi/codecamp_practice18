@@ -10,7 +10,7 @@ passwd   = 'Mimu1997'    # MySQLのパスワード
 dbname   = 'my_database'    # データベース名
 
 app = Flask(__name__)
-@app.route("/manegiment")
+@app.route("/manegiment", methods=["GET"])
 def manegiment():
     order_manegiment = []
     
@@ -48,10 +48,15 @@ def manegiment():
     
     return render_template("Manegiment_Vendingmachine.html", **params)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def buy_order():
     add_price=""
 
+    #if "add_price" in request.form():
     add_price = request.form.get("add_price", "")
     
     return render_template("Vendingmachine_buy.html")
+
+@app.route("/buy_result", methods=["POST"])
+def buy_result():
+    return render_template("Vendingmachine_result.html")

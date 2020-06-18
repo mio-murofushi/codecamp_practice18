@@ -8,12 +8,18 @@ CREATE TABLE drink_data(
     publicprivate boolean DEFAULT "0",
     PRIMARY KEY (drink_id)
 );
+
+ALTER TABLE drink_data
+ADD drink_photo VARCHAR(100);
+
+DELETE FROM drink_data;
+
 INSERT INTO drink_data(
-    drink_id, drink_name, price, publicprivate
+    drink_id, drink_name, price, publicprivate, drink_photo
 ) VALUES
-(1, "COLA", 130, 1),
-(2, "WATER", 100, 1),
-(3, "TEA", 130, 0);
+(1, "COLA", 130, 1, "コーラ.jpeg"),
+(2, "WATER", 100, 1, "水.jpeg"),
+(3, "TEA", 130, 0, "サイダー.jpeg");
 
 # 在庫数管理
 CREATE TABLE manegiment_drink_number(

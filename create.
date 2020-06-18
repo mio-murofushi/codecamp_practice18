@@ -14,5 +14,14 @@ ON drink_data.drink_id = manegiment_drink_number.drink_id;
 
 # データベースに画像を保存。
 CREATE TABLE photo_table(
-    
-)
+    photo_id INT AUTO_INCREMENT,
+    photo VALCHAR(100),
+    PRIMARY KEY (photo_id)
+);
+SELECT photo_table(
+    photo_id, photo
+)VALUES
+(1, "コーラ.jpeg")
+(2, "水.jpeg")
+(3, "サイダー.jpeg");
+

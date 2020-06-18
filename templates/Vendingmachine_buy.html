@@ -18,13 +18,7 @@
         <label for="add_price">金額</label>
         <input name="add_price">
 
-        <table>
-            <tr>
-                <th>商品名</th>
-                <th>価格</th>
-                <th>在庫数</th>
-            </tr> 
-    
+        <table>    
             {% for item in order_drink_data %}
             <tr>
                  <td> {{ item.drink_name }} </td>

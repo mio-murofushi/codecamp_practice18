@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
     <meta charset="utf-8">
+    <style type="text/css">
+        table, td, th {
+            border: solid black 1px;
+        }
+        table {
+            width: 200px;
+        }
+    </style>
     <title>
         自動販売機
     </title>
@@ -9,6 +17,22 @@
         <font size="4"><h1>自動販売機</h1></font>
         <label for="add_price">金額</label>
         <input name="add_price">
+
+        <table>
+            <tr>
+                <th>商品名</th>
+                <th>価格</th>
+                <th>在庫数</th>
+            </tr> 
+    
+            {% for item in order_drink_data %}
+            <tr>
+                 <td> {{ item.drink_name }} </td>
+                 <td> {{ item.price }} </td>
+                 <td> {{ item.drink_number }} </td>
+            </tr>
+            {% endfor %}
+        </table>
 
         <br><input type="submit" value="■ □ ■ □ ■ 購入 ■ □ ■ □ ■">
         </form>

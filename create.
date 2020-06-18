@@ -1,5 +1,18 @@
+# 管理画面。表示テーブル指定。
 SELECT 
 drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number 
 FROM drink_data 
 JOIN manegiment_drink_number 
 ON drink_data.drink_id = manegiment_drink_number.drink_id;
+
+# 購入画面。表示テーブル指定。
+SELECT
+drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number
+FROM drink_data
+JOIN manegiment_drink_number
+ON drink_data.drink_id = manegiment_drink_number.drink_id; 
+
+# データベースに画像を保存。
+CREATE TABLE photo_table(
+    
+)

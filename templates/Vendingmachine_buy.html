@@ -21,6 +21,7 @@
         <table>    
             {% for item in order_drink_data %}
             <tr>
+                 <td> <img src ="static/{{ item.drink_photo}}" width="100" height="100"></td>
                  <td> {{ item.drink_name }} </td>
                  <td> {{ item.price }} </td>
                  <td> {{ item.drink_number }} </td>

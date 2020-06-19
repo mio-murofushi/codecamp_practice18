@@ -20,12 +20,12 @@ def manegiment():
         
         # クエリ実行
         cursor = cnx.cursor()
-        query = 'SELECT drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
+        query = 'SELECT drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
         cursor.execute(query)
 
         # 実行したクエリ結果の取得
-        for (drink_name, price, drink_number, publicprivate) in cursor:
-            item = {"drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
+        for (drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
+            item = {"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
             order_manegiment.append(item)
         
         params = {
@@ -60,14 +60,14 @@ def buy_order():
 
         # クエリ実行
         cursor = cnx.cursor()
-        query = 'SELECT drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id; ' #実行するクエリ
+        query = 'SELECT drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
         cursor.execute(query)
 
         order_drink_data = []
 
         # 実行したクエリ結果の取得
-        for (drink_name, price, drink_number) in cursor:
-            item = {"drink_name":drink_name, "price":price, "drink_number":drink_number}
+        for (drink_photo, drink_name, price, drink_number) in cursor:
+            item = {"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number}
             order_drink_data.append(item)
 
         params = {

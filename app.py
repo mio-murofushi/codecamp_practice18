@@ -69,6 +69,7 @@ def buy_order():
         for (drink_photo, drink_name, price, drink_number) in cursor:
             item = {"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number}
             order_drink_data.append(item)
+        
 
         params = {
             "order_drink_data" : order_drink_data

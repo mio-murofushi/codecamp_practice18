@@ -29,7 +29,7 @@
                     <font color="#dc143c"> 売り切れ </font>
                 {% endif %}
                 {% if item.drink_number > 0 %}
-                    <input type="radio" name="buy_order" value='{item.drink_number}'>
+                    <input type="radio" name="buy_order" value="item.drink_id" {{'checked' if buy_order == "{{ item.drink_name }}"}}>
                 {% endif %}
                 </td>
             </tr>

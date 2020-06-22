@@ -69,7 +69,12 @@ def buy():
     # 購入ボタン選択時、投入金額・購入商品情報の取得
     if "buy_drink" in request.form.keys():
         add_price = request.form.get("add_price")
+        print(add_price)
         buy_order = request.form.get("buy_order")
+        print(buy_order)
+    
+    print("add_price:{}".format(add_price))
+    print("buy_order:{}".format(buy_order))
 
     try:
         # データベースの情報を渡し、接続
@@ -94,6 +99,7 @@ def buy():
             order_drink_data.append(item)
             if item["drink_id"] == request.form.get("buy_drink"):
                 buy = item
+
         
         # 購入金額計算
         if "buy_drink" in request.form.keys():
@@ -135,6 +141,9 @@ def buy():
 
     return render_template("Vendingmachine_buy.html", **params)
 
-@app.route("/buy_result", methods=["POST"])
-def buy_result():
+@app.route("/buy_result", methods=["GET","POST"])
+def buy_result(add_price, buy_order):
+    print("add_price:{}".format(add_price))
+    print("buy_order:{}".format(buy_order))
+    
     return render_template("Vendingmachine_result.html")

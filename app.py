@@ -142,8 +142,8 @@ def buy():
     return render_template("Vendingmachine_buy.html", **params)
 
 @app.route("/buy_result", methods=["GET","POST"])
-def buy_result(add_price, buy_order):
-    print("add_price:{}".format(add_price))
-    print("buy_order:{}".format(buy_order))
+def buy_result():
+    #print("add_price:{}".format(add_price))
+    #print("buy_order:{}".format(buy_order))
     
     return render_template("Vendingmachine_result.html")

@@ -29,14 +29,14 @@
                     <font color="#dc143c"> 売り切れ </font>
                 {% endif %}
                 {% if item.drink_number > 0 %}
-                    <input type="radio" name="buy_order" value=f'{item.drink_number}'>
+                    <input type="radio" name="buy_order" value='{item.drink_number}'>
                 {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </table>
 
-        <br><input type="submit" value="■ □ ■ □ ■ 購入 ■ □ ■ □ ■">
+        <br><input type="submit" name="buy_drink" value="■ □ ■ □ ■ 購入 ■ □ ■ □ ■">
         </form>
     </body>
 </html>

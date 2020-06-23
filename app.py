@@ -66,15 +66,14 @@ def buy():
     buy_drink="" #購入ボタン選択
     mes = "" #購入確認メッセージ
 
-    # 購入ボタン選択時、投入金額・購入商品情報の取得
-    if "buy_drink" in request.form.keys():
-        add_price = request.form.get("add_price")
-        print(add_price)
-        buy_order = request.form.get("buy_order")
-        print(buy_order)
+    # 購入ボタン選択、投入金額・購入商品情報の取得
+    buy_drink = request.form.get("buy_drink", "")
+    add_price = request.form.get("add_price", "")
+    buy_order = request.form.get("buy_order", "")
     
-    print("add_price:{}".format(add_price))
-    print("buy_order:{}".format(buy_order))
+    #print("buy_drink:{}".format(buy_drink))
+    #print("add_price:{}".format(add_price))
+    #print("buy_order:{}".format(buy_order))
 
     try:
         # データベースの情報を渡し、接続
@@ -88,17 +87,12 @@ def buy():
         order_drink_data = []
         buy = []
 
-        """
-        if "add_price" in request.form.keys():
-            if "buy_order" in request.form.keys():
-                
-        """
         # 実行したクエリ結果の取得
         for (drink_id, drink_photo, drink_name, price, drink_number) in cursor:
-            item = {"drink_id":id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number}
+            item = {"drink_id":drink_id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number}
             order_drink_data.append(item)
-            if item["drink_id"] == request.form.get("buy_drink"):
-                buy = item
+            if "buy_drink" == request.form.keys():
+                buy = item["buy_order"]
 
         
         # 購入金額計算

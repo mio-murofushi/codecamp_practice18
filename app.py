@@ -70,6 +70,7 @@ def buy():
     change_mes = "" #お釣りの無い時のメッセージ
     
     buy_drink_order="" #購入商品
+    buy_drink_number="" #購入商品の現在庫
 
     # 購入ボタン選択、投入金額・購入商品情報の取得
     if "add_price" in request.form.keys() and "buy_order" in request.form.keys():
@@ -105,6 +106,8 @@ def buy():
             if item["drink_id"] == int(buy_order):
                 buy = item
                 buy_drink_order = item["drink_name"]
+                buy_drink_number = buy["drink_number"]
+                update_drink_number = buy["drink_number"] -1
         
         # 購入金額計算
         if add_price == "":
@@ -119,16 +122,16 @@ def buy():
                 # 投入金額の確認
                 #   投入金額が商品金額よりも多い（お釣り計算）
                 if add_price >= int(buy["price"]):
-                    if change == add_price - buy["price"]:
+                    if add_price == buy["price"]:
                         change_mes = "丁度頂戴いたしました！また買ってくださいね！"
                     else:
                         change = add_price - buy["price"]
-                    """
+                    
                     # 在庫変更
-                    stock_query = f'UPDATE drink_data SET drink_number = (buy["buy_number"]-1) WHERE drink_id = "buy["id"]"'
+                    stock_query = F"UPDATE drink_data SET drink_number= '{update_drink_number}' WHERE drink_id = buy['{drink_id}']"
                     cursor.execute(stock_query)
                     cnx.commit()
-                    """
+                    
 
                 #   投入金額が商品金額より少ない
                 else:
@@ -153,10 +156,8 @@ def buy():
             "order_drink_data" : order_drink_data,
             "add_price":add_price,
             "buy_order":buy_order,
-            "mes" : mes,
-            #"change" : change
+            "mes" : mes
         }
-
 
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")

@@ -64,6 +64,7 @@ def buy():
     add_price="" #投入金額
     buy_order="" #購入商品
     buy_drink="" #購入ボタン選択
+    change = "" #お釣り
     mes = "" #購入確認メッセージ
 
     # 購入ボタン選択、投入金額・購入商品情報の取得
@@ -91,38 +92,49 @@ def buy():
         for (drink_id, drink_photo, drink_name, price, drink_number) in cursor:
             item = {"drink_id":drink_id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number}
             order_drink_data.append(item)
+            #print(item["drink_id"])
 
-            print(item["drink_id"])
-
-            if item["drink_id"] == buy_order:
+            # どの商品を選択したのか取得
+            # 無選択の場合は、0を取得(intによるエラーを避けるため。)
+            if buy_order == "":
+                buy_order = '0'
+            if item["drink_id"] == int(buy_order):
                 buy = item
         
         # 購入金額計算
-        """
-        if "buy_drink" in request.form.keys():
-            buy["price"] = int(buy["price"])
-            add_price = int(add_price)
-        
+        if add_price == "":
+            add_price = '0'
 
-        # 投入金額の確認
-        if add_price >= buy["price"]:
-            change = add_price - buy["price"]
+        # 投入金額が数字であるかの確認
+        if str.isnumeric(add_price) == True:
+            #  購入ボタンが押された場合
+            if "buy_drink" in request.form.keys():
+                add_price = int(add_price)
 
-            # 在庫変更
-            stock_query = f'UPDATE drink_data SET drink_number = (buy["buy_number"]-1) WHERE drink_id = "buy["id"]"'
-            cursor.execute(stock_query)
-            cnx.commit()
-        else:
-            mes = "投入金額が足りていません。"
-        
-        """
+                # 投入金額の確認
+                #   投入金額が商品金額よりも多い（お釣り計算）
+                if add_price >= buy["price"]:
+                    change = add_price - buy["price"]
+                    """
+                    # 在庫変更
+                    stock_query = f'UPDATE drink_data SET drink_number = (buy["buy_number"]-1) WHERE drink_id = "buy["id"]"'
+                    cursor.execute(stock_query)
+                    cnx.commit()
+                    """
+                #   投入金額が商品金額より少ない
+                else:
+                    mes = "投入金額が足りていません。"
 
+        # 投入金額が数値以外の場合
+        elif str.isnumeric(add_price) == False:
+            mes = "金額を入力してください。" 
 
         params = {
             "order_drink_data" : order_drink_data,
             "add_price":add_price,
             "buy_order":buy_order,
-            "mes" : mes
+            "mes" : mes,
+            "change" : change
         }
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")

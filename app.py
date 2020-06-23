@@ -67,9 +67,9 @@ def buy():
     mes = "" #購入確認メッセージ
 
     # 購入ボタン選択、投入金額・購入商品情報の取得
-    buy_drink = request.form.get("buy_drink", "")
-    add_price = request.form.get("add_price", "")
-    buy_order = request.form.get("buy_order", "")
+    if "add_price" in request.form.keys() and "buy_order" in request.form.keys():
+        add_price = request.form.get("add_price", "")
+        buy_order = request.form.get("buy_order", "")
     
     #print("buy_drink:{}".format(buy_drink))
     #print("add_price:{}".format(add_price))
@@ -91,25 +91,31 @@ def buy():
         for (drink_id, drink_photo, drink_name, price, drink_number) in cursor:
             item = {"drink_id":drink_id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number}
             order_drink_data.append(item)
-            if "buy_drink" == request.form.keys():
-                buy = item["buy_order"]
 
+            print(item["drink_id"])
+
+            if item["drink_id"] == buy_order:
+                buy = item
         
         # 購入金額計算
+        """
         if "buy_drink" in request.form.keys():
             buy["price"] = int(buy["price"])
             add_price = int(add_price)
+        
 
-            # 投入金額の確認
-            if add_price >= buy["price"]:
-                change = add_price - buy["price"]
+        # 投入金額の確認
+        if add_price >= buy["price"]:
+            change = add_price - buy["price"]
 
-                # 在庫変更
-                stock_query = f'UPDATE drink_data SET drink_number = (buy["buy_number"]-1) WHERE drink_id = "buy["id"]"'
-                cursor.execute(stock_query)
-                cnx.commit()
-            else:
-                mes = "投入金額が足りていません。"
+            # 在庫変更
+            stock_query = f'UPDATE drink_data SET drink_number = (buy["buy_number"]-1) WHERE drink_id = "buy["id"]"'
+            cursor.execute(stock_query)
+            cnx.commit()
+        else:
+            mes = "投入金額が足りていません。"
+        
+        """
 
 
         params = {

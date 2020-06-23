@@ -13,7 +13,7 @@
         自動販売機
     </title>
     <body>
-        <form method="post" action="buy_result">
+        <form method="post">
         <font size="4"><h1>自動販売機</h1></font>
         <label for="add_price">金額</label>
         <input name="add_price"><br>
@@ -29,14 +29,14 @@
                     <font color="#dc143c"> 売り切れ </font>
                 {% endif %}
                 {% if item.drink_number > 0 %}
-                    <input type="radio" name="item.buy_order" value="{{item.drink_id}}" {{'checked' if buy_order == "{{ item.drink_name }}"}}>
+                    <input type="radio" name="buy_order" value="{{item.drink_id}}" {{'checked' if buy_order == "{{ item.drink_name }}"}}>
                 {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </table>
 
-        <br><input type="submit" name="buy_drink" value="■ □ ■ □ ■ 購入 ■ □ ■ □ ■">
+        <br><button type="submit" name="buy_drink">■ □ ■ □ ■ 購入 ■ □ ■ □ ■</button>
         </form>
     </body>
 </html>

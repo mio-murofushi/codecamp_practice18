@@ -6,21 +6,24 @@
     </title>
     <body>
         <font size="4">
-            <h1>自動販売機　結果</h1>
+            <h1>購入結果</h1>
         </font>
-        {{ add_price }}
 
         {% if mes %}
-            <p>mes</p>
+            <p>{{ mes}}</p>
         {% endif %}
 
         <!-- 画像ファイルを読み込む -->
 
-        {% if buy_order %}
-            <p>がしゃん！ 【{{ buy_order }}】 が買えました！</p>
-        {% endif %}
+
         {% if change %}
-            <p>お釣りは 【{{ change }}】 です</p>
+            {% if buy_order %}
+                <p>がしゃん！ 【{{ buy_drink_order }}】 が買えました！</p>
+            {% endif %}
+            <p>お釣りは 【{{ change }}円】 です</p>
+        {% endif %}
+        {% if change_mes %}
+            <p>{{ change_mes }}</p>
         {% endif %}
 
 

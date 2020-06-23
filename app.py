@@ -62,10 +62,14 @@ def manegiment():
 def buy():
     # 初期値
     add_price="" #投入金額
-    buy_order="" #購入商品
+    buy_order="" #購入商品のdrink_id
     buy_drink="" #購入ボタン選択
     change = "" #お釣り
+
     mes = "" #購入確認メッセージ
+    change_mes = "" #お釣りの無い時のメッセージ
+    
+    buy_drink_order="" #購入商品
 
     # 購入ボタン選択、投入金額・購入商品情報の取得
     if "add_price" in request.form.keys() and "buy_order" in request.form.keys():
@@ -100,6 +104,7 @@ def buy():
                 buy_order = '0'
             if item["drink_id"] == int(buy_order):
                 buy = item
+                buy_drink_order = item["drink_name"]
         
         # 購入金額計算
         if add_price == "":
@@ -113,17 +118,32 @@ def buy():
 
                 # 投入金額の確認
                 #   投入金額が商品金額よりも多い（お釣り計算）
-                if add_price >= buy["price"]:
-                    change = add_price - buy["price"]
+                if add_price >= int(buy["price"]):
+                    if change == add_price - buy["price"]:
+                        change_mes = "丁度頂戴いたしました！また買ってくださいね！"
+                    else:
+                        change = add_price - buy["price"]
                     """
                     # 在庫変更
                     stock_query = f'UPDATE drink_data SET drink_number = (buy["buy_number"]-1) WHERE drink_id = "buy["id"]"'
                     cursor.execute(stock_query)
                     cnx.commit()
                     """
+
                 #   投入金額が商品金額より少ない
                 else:
                     mes = "投入金額が足りていません。"
+                
+                params = {
+                "order_drink_data" : order_drink_data,
+                "add_price":add_price,
+                "buy_order":buy_order,
+                "mes" : mes,
+                "change_mes" : change_mes,
+                "change" : change,
+                "buy_drink_order" : buy_drink_order
+                }
+                return render_template("Vendingmachine_result.html", **params)
 
         # 投入金額が数値以外の場合
         elif str.isnumeric(add_price) == False:
@@ -134,8 +154,10 @@ def buy():
             "add_price":add_price,
             "buy_order":buy_order,
             "mes" : mes,
-            "change" : change
+            #"change" : change
         }
+
+
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")
 
@@ -152,10 +174,3 @@ def buy():
         cnx.close()
 
     return render_template("Vendingmachine_buy.html", **params)
-
-@app.route("/buy_result", methods=["GET","POST"])
-def buy_result():
-    #print("add_price:{}".format(add_price))
-    #print("buy_order:{}".format(buy_order))
-    
-    return render_template("Vendingmachine_result.html")

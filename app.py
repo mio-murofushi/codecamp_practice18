@@ -11,14 +11,12 @@ dbname   = 'my_database'    # データベース名
 
 # 管理画面
 app = Flask(__name__)
-@app.route("/manegiment", methods=["GET"])
+@app.route("/manegiment", methods=["GET","POST"])
 def manegiment():
-    order_name = request.form.get("order_name", "")
-    print(order_name)
-    order_price = request.form.get("order_price", "")
-    print(order_price)
-    order_number = request.form.get("order_number", "")
-    print(order_number)
+    if "order_name" in request.form.keys() and "order_price" in request.form.keys() and "order_number" in request.form.keys():
+        order_name = request.form.get("order_name", "")
+        order_price = request.form.get("order_price", "")
+        order_number = request.form.get("order_number", "")
 
     order_manegiment = []
     mes = ""
@@ -128,7 +126,7 @@ def buy():
                         change = add_price - buy["price"]
                     
                     # 在庫変更
-                    stock_query = F"UPDATE drink_data SET drink_number= "'{update_drink_number}'" WHERE drink_id = buy[drink_id]"
+                    stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
                     cursor.execute(stock_query)
                     cnx.commit()
                     

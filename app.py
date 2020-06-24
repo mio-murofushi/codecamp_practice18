@@ -128,7 +128,7 @@ def buy():
                         change = add_price - buy["price"]
                     
                     # 在庫変更
-                    stock_query = F"UPDATE drink_data SET drink_number= '{update_drink_number}' WHERE drink_id = buy['{drink_id}']"
+                    stock_query = F"UPDATE drink_data SET drink_number= "'{update_drink_number}'" WHERE drink_id = buy[drink_id]"
                     cursor.execute(stock_query)
                     cnx.commit()
                     

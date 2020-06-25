@@ -16,6 +16,8 @@ app = Flask(__name__)
 def manegiment():
     order_manegiment = []
     mes = ""
+    add_filename = "" #追加商品のパス指定
+    #filename
     
     # 商品追加のボタンをおした時、新商品情報を取得
     if "add" in request.form.keys():
@@ -23,6 +25,13 @@ def manegiment():
         order_price = request.form.get("order_price", "")
         order_number = request.form.get("order_number", "")
         filename = request.form.get("filename", "")
+        """
+        # ファイル情報取得
+        if "filename" in request.files:
+            filename = request.files["filename"]
+        else:
+            filename = ""
+        """
         publicprivate = request.form.get("publicprivate", "")
     
     try:
@@ -39,6 +48,15 @@ def manegiment():
                 if str.isnumeric(order_price) == True and str.isnumeric(order_number) == True:
                     # 新商品のファイルネームがPNG,JPEGであるか、否か
                     if re.match("([^\s]+(\.(?i)(jpeg|png))$)", filename):
+                        # 新商品の情報をクエリに追加
+                        cursor = cnx.cursor()
+                        new_order_query=F"INSERT INTO drink_data(drink_name, price, publicprivate, drink_photo) VALUES ('{order_name}', {order_price}, {publicprivate}, '{filename}')"
+                        new_stock_query=F"INSERT INTO manegiment_drink_number(drink_number) VALUES ({order_number})"
+                        cursor.execute(new_order_query)
+                        cnx.commit()
+                        cursor.execute(new_stock_query)
+                        cnx.commit()
+
                         mes = "商品情報追加完了"
                     else:
                         mes = "ファイルの拡張子は、JPEG or PNG にしてください。"

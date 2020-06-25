@@ -21,6 +21,9 @@
         <font size="5">
         <b><p1>新商品追加</p1></b>
         </font>
+        {% if  mes %}
+            {{ mes }}
+        {% endif %}
         <form method="post">
             <label for="order_name">名前：</label>
             <input name="order_name">
@@ -30,16 +33,16 @@
             <input name="order_number"> 
             
             <!-- ファイル選択 -->
-            <br><input type="file" name="ファイルを選択">
+            <br><input type="file" name="filename">
 
             <!-- セレクトボックスの指定 -->
-            <br><select name = "PublicPrivate">
-                <option value="公開">公開</option>
-                <option value="非公開">非公開</option>
+            <br><select name = "publicprivate">
+                <option value="1">公開</option>
+                <option value="0">非公開</option>
             </select>
 
             <!-- 商品追加ボタン -->
-            <br><button type="submit">■ □ ■ □ ■ 商品追加 ■ □ ■ □ ■</button>
+            <br><button type="submit" name="add">■ □ ■ □ ■ 商品追加 ■ □ ■ □ ■</button>
         </form>
         <hr>
         <font size="5">

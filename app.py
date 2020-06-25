@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import mysql.connector
 from mysql.connector import errorcode
 import glob
+import re
 
 # データベース接続
 host = 'localhost' # データベースのホスト名又はIPアドレス
@@ -13,18 +14,37 @@ dbname   = 'my_database'    # データベース名
 app = Flask(__name__)
 @app.route("/manegiment", methods=["GET","POST"])
 def manegiment():
-    if "order_name" in request.form.keys() and "order_price" in request.form.keys() and "order_number" in request.form.keys():
+    order_manegiment = []
+    mes = ""
+    
+    # 商品追加のボタンをおした時、新商品情報を取得
+    if "add" in request.form.keys():
         order_name = request.form.get("order_name", "")
         order_price = request.form.get("order_price", "")
         order_number = request.form.get("order_number", "")
-
-    order_manegiment = []
-    mes = ""
+        filename = request.form.get("filename", "")
+        publicprivate = request.form.get("publicprivate", "")
     
     try:
         # データベースの情報を渡し、接続
         cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
         
+        # 新商品情報を取得した場合
+        if "add" in request.form.keys():
+            # 入力欄に記入漏れがあるか、否か
+            if order_name=="" or order_price=="" or order_number=="" or filename=="":
+                mes = "入力欄が不十分です。"
+            else:
+                # 新商品の価格、在庫が数字であるか、否か
+                if str.isnumeric(order_price) == True and str.isnumeric(order_number) == True:
+                    # 新商品のファイルネームがPNG,JPEGであるか、否か
+                    if re.match("([^\s]+(\.(?i)(jpeg|png))$)", filename):
+                        mes = "商品情報追加完了"
+                    else:
+                        mes = "ファイルの拡張子は、JPEG or PNG にしてください。"
+                else:
+                    mes = "価格 または 在庫数に問題があります。"
+
         # クエリ実行
         cursor = cnx.cursor()
         query = 'SELECT drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ

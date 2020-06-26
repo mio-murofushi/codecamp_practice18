@@ -6,12 +6,11 @@
                 border: solid black 1px;
             }
             table {
-                width: 200px;
+                width:200
             }
         </style>
     <meta charset="UTF-8">
     <title>
-    
         自動販売機　管理画面
     </title>
     </head>
@@ -69,8 +68,10 @@
             <td>
             <form method="post">
             {% if item.publicprivate == 0 %}
+                <input type="hidden" name="status_id" value='{{item.drink_id}}'>
                 <button type="submit" name="status" value="{{item.publicprivate}}">非公開→公開</button>
             {% elif item.publicprivate == 1 %} 
+                <input type="hidden" name="status_id" value='{{item.drink_id}}'>
                 <button type="submit" name="status" value="{{item.publicprivate}}">公開→非公開</button>
             {% endif %}
             </form>

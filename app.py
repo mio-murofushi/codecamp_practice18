@@ -47,6 +47,17 @@ def manegiment():
 
         publicprivate = request.form.get("publicprivate", "")
     
+    # ステータスの変更ボタンを押された場合
+    if "status" in request.form.keys() and "status_id" in request.form.keys():
+        status = request.form.get("status", "")
+        status_id = request.form.get("status_id", "")
+        # 公開→非公開
+        if status == '1':
+            change_status = '0'
+        # 非公開→公開
+        elif status == '0':
+            change_status = '1'
+    
     try:
         # データベースの情報を渡し、接続
         cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
@@ -77,15 +88,23 @@ def manegiment():
                         mes = "ファイルの拡張子は、JPEG or PNG にしてください。"
                 else:
                     mes = "価格 または 在庫数に問題があります。"
+        
+        # 公開非公開のボタンを押された場合
+        if "status" in request.form.keys():
+            if change_status == '0' or change_status == '1':
+                cursor = cnx.cursor()
+                change_status_query=F"UPDATE drink_data SET publicprivate='{change_status}' WHERE drink_id = '{status_id}'"
+                cursor.execute(change_status_query)
+                cnx.commit()
 
         # クエリ実行
         cursor = cnx.cursor()
-        query = 'SELECT drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
+        query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
         cursor.execute(query)
 
         # 実行したクエリ結果の取得
-        for (drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
-            item = {"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
+        for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
+            item = {"drink_id":drink_id, "drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
             order_manegiment.append(item)
         
         params = {

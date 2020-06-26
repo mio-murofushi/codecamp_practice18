@@ -63,10 +63,12 @@
         <tr>
             <td> <img src ="static/{{ item.drink_photo}}" width="100" height="100"> </td>
             <td> {{ item.drink_name }} </td>
-            <td> {{ item.price }} </td>
-            <td> {{ item.drink_number }} </td>
-            <td>
-            <form method="post">
+            <td> {{ item.price }}円 </td>
+            <td><form method="post">
+            <input name="new_stock" value="{{ item.drink_number}}">
+            <button type="submit">変更</button>
+            </form></td>
+            <td><form method="post">
             {% if item.publicprivate == 0 %}
                 <input type="hidden" name="status_id" value='{{item.drink_id}}'>
                 <button type="submit" name="status" value="{{item.publicprivate}}">非公開→公開</button>
@@ -74,8 +76,7 @@
                 <input type="hidden" name="status_id" value='{{item.drink_id}}'>
                 <button type="submit" name="status" value="{{item.publicprivate}}">公開→非公開</button>
             {% endif %}
-            </form>
-            </td>
+            </form></td>
         </tr>
         {% endfor %}
         </table>

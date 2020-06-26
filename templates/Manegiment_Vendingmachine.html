@@ -24,7 +24,7 @@
         {% if  mes %}
             {{ mes }}
         {% endif %}
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <label for="order_name">名前：</label>
             <input name="order_name">
             <br><label for="order_price">値段：</label>
@@ -37,8 +37,8 @@
 
             <!-- セレクトボックスの指定 -->
             <br><select name = "publicprivate">
-                <option value="0">公開</option>
-                <option value="1">非公開</option>
+                <option value="1">公開</option>
+                <option value="0">非公開</option>
             </select>
 
             <!-- 商品追加ボタン -->
@@ -66,7 +66,15 @@
             <td> {{ item.drink_name }} </td>
             <td> {{ item.price }} </td>
             <td> {{ item.drink_number }} </td>
-            <td> {{ item.publicprivate }} </td>
+            <td>
+            <form method="post">
+            {% if item.publicprivate == 0 %}
+                <button type="submit" name="status" value="{{item.publicprivate}}">非公開→公開</button>
+            {% elif item.publicprivate == 1 %} 
+                <button type="submit" name="status" value="{{item.publicprivate}}">公開→非公開</button>
+            {% endif %}
+            </form>
+            </td>
         </tr>
         {% endfor %}
         </table>

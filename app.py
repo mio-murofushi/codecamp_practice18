@@ -28,12 +28,14 @@ def manegiment():
     mes = ""
     add_filename = "" #追加商品のパス指定
     file_name = ""
+    filename=""
     
     # 商品追加のボタンをおした時、新商品情報を取得
-    if "add" in request.form.keys() and "file_name" in request.files:
+    if "add" in request.form.keys():
         order_name = request.form.get("order_name", "")
         order_price = request.form.get("order_price", "")
         order_number = request.form.get("order_number", "")
+        #file_name = request.form.get("file_name", "")
         file_name = request.files["file_name"]
         """
         # ファイル情報取得
@@ -58,15 +60,15 @@ def manegiment():
                 # 新商品の価格、在庫が数字であるか、否か
                 if str.isnumeric(order_price) == True and str.isnumeric(order_number) == True:
                     # 新商品のファイルネームがPNG,JPEGであるか、否か
-                    if re.match("([^\s]+(\.(?i)(jpeg|jpg|png))$)", file_name):
-                        add_filename.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+                    if re.match("([^\s]+(\.(?i)(jpeg|jpg|png))$)", file_name.filename):
+                        file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name.filename))
                         
                         # 新商品の情報をクエリに追加
                         cursor = cnx.cursor()
-                        new_order_query=F"INSERT INTO drink_data(drink_name, price, publicprivate, drink_photo) VALUES ('{order_name}', {order_price}, {publicprivate}, '{file_name}')"
-                        new_stock_query=F"INSERT INTO manegiment_drink_number(drink_number) VALUES ({order_number})"
+                        new_order_query=F"INSERT INTO drink_data(drink_name, price, publicprivate, drink_photo) VALUES ('{order_name}', {order_price}, {publicprivate}, '{file_name.filename}')"
                         cursor.execute(new_order_query)
                         cnx.commit()
+                        new_stock_query=F"INSERT INTO manegiment_drink_number(drink_number) VALUES ({order_number})"
                         cursor.execute(new_stock_query)
                         cnx.commit()
 

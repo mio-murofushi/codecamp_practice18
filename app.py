@@ -187,8 +187,9 @@ def buy():
                 buy_drink_photo = item["drink_photo"]
                 buy_drink_order = item["drink_name"]
                 buy_drink_number = buy["drink_number"]
+                buy_publicprivate = buy["publicprivate"]
                 update_drink_number = buy["drink_number"] -1
-        print(buy_drink_photo)
+        # print(buy_drink_photo)
         
         # 購入金額計算
         if add_price == "":
@@ -202,15 +203,23 @@ def buy():
                 # 投入金額の確認
                 #   投入金額が商品金額よりも多い（お釣り計算）
                 if add_price >= int(buy["price"]):
-                    if add_price == buy["price"]:
-                        change_mes = "丁度頂戴いたしました！また買ってくださいね！"
+                    # 在庫があるかどうか
+                    if int(buy_drink_number) > 0:
+                        # 公開しているかどうか
+                        if buy_publicprivate == 1:
+                            # 在庫変更
+                            stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
+                            cursor.execute(stock_query)
+                            cnx.commit()
+                            # お釣り計算
+                            if add_price == buy["price"]:
+                                change_mes = "丁度頂戴いたしました！また買ってくださいね！"
+                            else:
+                                change = add_price - buy["price"]
+                        elif buy_publicprivate == 0:
+                            mes = "申し訳ございません。ただいま非公開商品となっております。"
                     else:
-                        change = add_price - buy["price"]
-                    
-                    # 在庫変更
-                    stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
-                    cursor.execute(stock_query)
-                    cnx.commit()
+                        mes = "申し訳ございませんが、売り切れです…。"
 
                 #   投入金額が商品金額より少ない
                 else:
@@ -250,11 +259,6 @@ def buy():
 
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")
-    """
-    except mysql.connector.Error:
-        cnx.rollback()
-    raise
-    """
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

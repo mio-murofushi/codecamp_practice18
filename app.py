@@ -117,11 +117,7 @@ def manegiment():
         }
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")
-    """
-    except mysql.connector.Error:
-        cnx.rollback()
-        raise
-    """
+
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("ユーザ名かパスワードに問題があります。")

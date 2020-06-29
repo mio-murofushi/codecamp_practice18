@@ -65,8 +65,9 @@
             <td> {{ item.drink_name }} </td>
             <td> {{ item.price }}円 </td>
             <td><form method="post">
-            <input name="new_stock" value="{{ item.drink_number}}">
-            <button type="submit">変更</button>
+            <input type="hidden" name="change_id" value='{{ item.drink_id }}'>
+            <input name="new_stock" value="{{ item.drink_number }}">
+            <button type="submit" name="change">変更</button>
             </form></td>
             <td><form method="post">
             {% if item.publicprivate == 0 %}

@@ -37,18 +37,15 @@ def manegiment():
         order_number = request.form.get("order_number", "")
         #file_name = request.form.get("file_name", "")
         file_name = request.files["file_name"]
-        """
-        # ファイル情報取得
-        if "file_name" in request.files:
-            file_name = request.files["file_name"]
-        else:
-            file_name = ""
-        """
-
         publicprivate = request.form.get("publicprivate", "")
     
+    # 在庫変更のボタンが押された場合
+    if "change" in request.form.keys():
+        new_stock = request.form.get("new_stock", "")
+        change_id = request.form.get("change_id", "")
+
     # ステータスの変更ボタンを押された場合
-    if "status" in request.form.keys() and "status_id" in request.form.keys():
+    if "status" in request.form.keys():
         status = request.form.get("status", "")
         status_id = request.form.get("status_id", "")
         # 公開→非公開
@@ -89,6 +86,13 @@ def manegiment():
                 else:
                     mes = "価格 または 在庫数に問題があります。"
         
+        # 在庫変更のボタンが押された場合
+        if "change" in request.form.keys():
+            cursor = cnx.cursor()
+            change_stock_query=F"UPDATE manegiment_drink_number SET drink_number='{new_stock}' WHERE drink_id = '{change_id}'"
+            cursor.execute(change_stock_query)
+            cnx.commit()
+
         # 公開非公開のボタンを押された場合
         if "status" in request.form.keys():
             if change_status == '0' or change_status == '1':
@@ -201,7 +205,6 @@ def buy():
                     stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
                     cursor.execute(stock_query)
                     cnx.commit()
-                    
 
                 #   投入金額が商品金額より少ない
                 else:

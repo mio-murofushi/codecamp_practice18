@@ -165,17 +165,19 @@ def buy():
 
         # クエリ実行
         cursor = cnx.cursor()
-        query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
+        query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
         cursor.execute(query)
 
         order_drink_data = []
         buy = []
 
         # 実行したクエリ結果の取得
-        for (drink_id, drink_photo, drink_name, price, drink_number) in cursor:
-            item = {"drink_id":drink_id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number}
+        for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
+            item = {"drink_id":drink_id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
             order_drink_data.append(item)
             #print(item["drink_id"])
+
+            #if item["publicprivate"] == 1
 
             # どの商品を選択したのか取得
             # 無選択の場合は、0を取得(intによるエラーを避けるため。)
@@ -196,6 +198,7 @@ def buy():
         if str.isnumeric(add_price) == True:
             #  購入ボタンが押された場合
             if "buy_drink" in request.form.keys():
+                
                 add_price = int(add_price)
 
                 # 投入金額の確認
@@ -215,8 +218,15 @@ def buy():
                 else:
                     mes = "投入金額が足りていません。"
                 
+                """
+                if isinstance("add_price", int) == True:
+                else:
+                    mes = "入力した数値が整数ではありません。"
+                """
+                
                 params = {
                 "order_drink_data" : order_drink_data,
+                "buy_drink_photo" : buy_drink_photo,
                 "add_price":add_price,
                 "buy_order":buy_order,
                 "mes" : mes,

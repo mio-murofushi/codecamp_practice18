@@ -84,7 +84,7 @@ def manegiment():
                         mes = "ファイルの拡張子は、JPEG or PNG にしてください。"
                 else:
                     mes = "価格 または 在庫数に問題があります。"
-        
+
         # 在庫変更のボタンが押された場合
         if "change" in request.form.keys():
             cursor = cnx.cursor()
@@ -117,7 +117,11 @@ def manegiment():
         }
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")
-
+    """
+    except mysql.connector.Error:
+        cnx.rollback()
+        raise
+    """
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("ユーザ名かパスワードに問題があります。")
@@ -250,6 +254,11 @@ def buy():
 
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")
+    """
+    except mysql.connector.Error:
+        cnx.rollback()
+    raise
+    """
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

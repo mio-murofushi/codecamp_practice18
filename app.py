@@ -14,7 +14,6 @@ username = 'root'  # MySQLのユーザ名
 passwd   = 'Mimu1997'    # MySQLのパスワード
 dbname   = 'my_database'    # データベース名
 
-
 app = Flask(__name__)
 
 # フォルダ
@@ -92,6 +91,7 @@ def manegiment():
             change_stock_query=F"UPDATE manegiment_drink_number SET drink_number='{new_stock}' WHERE drink_id = '{change_id}'"
             cursor.execute(change_stock_query)
             cnx.commit()
+            mes="在庫の更新が行われました。"
 
         # 公開非公開のボタンを押された場合
         if "status" in request.form.keys():
@@ -100,6 +100,7 @@ def manegiment():
                 change_status_query=F"UPDATE drink_data SET publicprivate='{change_status}' WHERE drink_id = '{status_id}'"
                 cursor.execute(change_status_query)
                 cnx.commit()
+                mes = "公開非公開の情報が更新されました。"
 
         # クエリ実行
         cursor = cnx.cursor()
@@ -112,6 +113,7 @@ def manegiment():
             order_manegiment.append(item)
         
         params = {
+            "mes":mes,
             "order_manegiment" : order_manegiment
         }
         #ローカルフォルダから画像を配列にいれる
@@ -145,6 +147,8 @@ def buy():
     
     buy_drink_order="" #購入商品
     buy_drink_number="" #購入商品の現在庫
+    buy_drink_photo = "" #購入商品の写真選択
+
 
     # 購入ボタン選択、投入金額・購入商品情報の取得
     if "add_price" in request.form.keys() and "buy_order" in request.form.keys():
@@ -179,6 +183,7 @@ def buy():
                 buy_order = '0'
             if item["drink_id"] == int(buy_order):
                 buy = item
+                buy_drink_photo = buy["drink_photo"]
                 buy_drink_order = item["drink_name"]
                 buy_drink_number = buy["drink_number"]
                 update_drink_number = buy["drink_number"] -1
@@ -227,6 +232,7 @@ def buy():
 
         params = {
             "order_drink_data" : order_drink_data,
+            "buy_drink_photo" : buy_drink_photo,
             "add_price":add_price,
             "buy_order":buy_order,
             "mes" : mes

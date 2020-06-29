@@ -17,18 +17,19 @@
     <body>
         <!-- hr:線をひく-->
         <hr>
-        <font size="5">
-        <b><p1>新商品追加</p1></b>
-        </font>
+        <b><h2>新商品追加</h2></b>
         {% if  mes %}
-            {{ mes }}
+            <p>{{ mes }}</p>
         {% endif %}
+        <font size="2">
+        <p>全ての項目を入力してください！</p>
+        </font>
         <form method="post" enctype="multipart/form-data">
             <label for="order_name">名前：</label>
-            <input name="order_name">
+            <input name="order_name" placeholder="入力してください">
             <br><label for="order_price">値段：</label>
-            <input name="order_price">
-            <br><label for="order_number">個数：</label>
+            <input name="order_price" placeholder="0以上の整数">
+            <br><label for="order_number" placeholder="0以上の整数">個数：</label>
             <input name="order_number"> 
             
             <!-- ファイル選択 -->
@@ -44,12 +45,14 @@
             <br><button type="submit" name="add">■ □ ■ □ ■ 商品追加 ■ □ ■ □ ■</button>
         </form>
         <hr>
-        <font size="5">
-        <b><p>商品情報　変更</p></b>
+        <b><h2>商品情報　変更</h2></b>
+        <font size="2">
+        <div>
+            <p>在庫数は整数で入力してください！</p>
+        </div>
         </font>
-        <font size="1">
-        <h1>商品一覧</h1>
-        </font>
+        <h3>商品一覧</h3>
+        
         <table width="100" height="100">
         <tr>
             <th>商品画像</th>

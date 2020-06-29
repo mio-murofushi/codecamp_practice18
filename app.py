@@ -185,10 +185,11 @@ def buy():
                 buy_order = '0'
             if item["drink_id"] == int(buy_order):
                 buy = item
-                buy_drink_photo = buy["drink_photo"]
+                buy_drink_photo = item["drink_photo"]
                 buy_drink_order = item["drink_name"]
                 buy_drink_number = buy["drink_number"]
                 update_drink_number = buy["drink_number"] -1
+        print(buy_drink_photo)
         
         # 購入金額計算
         if add_price == "":
@@ -234,12 +235,12 @@ def buy():
                 "change" : change,
                 "buy_drink_order" : buy_drink_order
                 }
-                return render_template("Vendingmachine_result.html", **params)
+                return render_template("Vendingmachine_result.html", **params)      
 
         # 投入金額が数値以外の場合
         elif str.isnumeric(add_price) == False:
             mes = "金額を入力してください。" 
-
+        
         params = {
             "order_drink_data" : order_drink_data,
             "buy_drink_photo" : buy_drink_photo,

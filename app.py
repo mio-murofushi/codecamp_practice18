@@ -57,7 +57,7 @@ def manegiment():
     try:
         # データベースの情報を渡し、接続
         cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
-        
+
         # 新商品情報を取得した場合
         if "add" in request.form.keys():
             # 入力欄に記入漏れがあるか、否か
@@ -106,12 +106,11 @@ def manegiment():
         cursor = cnx.cursor()
         query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
         cursor.execute(query)
-
         # 実行したクエリ結果の取得
         for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
             item = {"drink_id":drink_id, "drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
             order_manegiment.append(item)
-        
+
         params = {
             "mes":mes,
             "order_manegiment" : order_manegiment
@@ -154,7 +153,7 @@ def buy():
     if "add_price" in request.form.keys() and "buy_order" in request.form.keys():
         add_price = request.form.get("add_price", "")
         buy_order = request.form.get("buy_order", "")
-    
+        
     #print("buy_drink:{}".format(buy_drink))
     #print("add_price:{}".format(add_price))
     #print("buy_order:{}".format(buy_order))
@@ -199,9 +198,7 @@ def buy():
         if str.isnumeric(add_price) == True:
             #  購入ボタンが押された場合
             if "buy_drink" in request.form.keys():
-                
                 add_price = int(add_price)
-
                 # 投入金額の確認
                 #   投入金額が商品金額よりも多い（お釣り計算）
                 if add_price >= int(buy["price"]):
@@ -239,8 +236,10 @@ def buy():
 
         # 投入金額が数値以外の場合
         elif str.isnumeric(add_price) == False:
-            mes = "金額を入力してください。" 
-        
+            mes = "金額を入力してください。"
+
+        cursor.execute(query)
+
         params = {
             "order_drink_data" : order_drink_data,
             "buy_drink_photo" : buy_drink_photo,

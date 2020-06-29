@@ -12,18 +12,19 @@
         {% if mes %}
             <p>{{ mes}}</p>
         {% endif %}
-        {% if change %}
-            {% if buy_order %}
 
+        {% if change %}  
+            {% if buy_order %}    
                 <img src ="static/{{buy_drink_photo}}" width="100" height="100">
                 <p>がしゃん！ 【{{ buy_drink_order }}】 が買えました！</p>
-            {% endif %}    
-            <p>お釣りは 【{{ change }}円】 です</p>
+            {% endif %}   
+                <p>お釣りは 【{{ change }}円】 です</p>
         {% endif %}
         {% if change_mes %}
+            <img src ="static/{{buy_drink_photo}}" width="100" height="100">
+            <p>がしゃん！ 【{{ buy_drink_order }}】 が買えました！</p>
             <p>{{ change_mes }}</p>
         {% endif %}
-
 
         <button type="button" onclick="history.back()">戻る</button>
 

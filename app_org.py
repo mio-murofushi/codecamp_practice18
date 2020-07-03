@@ -43,9 +43,9 @@ def get_buying_drink_infomation(add, order_name, order_number, file_name, public
     return order_name, order_price, order_number, file_name, publicprivate
 
 # 管理画面
-@app.route("/manegiment", methods=["GET","POST"])
-def manegiment():
-    order_manegiment = []
+@app.route("/managiment", methods=["GET","POST"])
+def managiment():
+    order_managiment = []
     mes = ""
     add_filename = "" #追加商品のパス指定
     file_name = ""
@@ -134,11 +134,11 @@ def manegiment():
         # 実行したクエリ結果の取得
         for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
             item = {"drink_id":drink_id, "drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
-            order_manegiment.append(item)
+            order_managiment.append(item)
 
         params = {
             "mes":mes,
-            "order_manegiment" : order_manegiment
+            "order_managiment" : order_managiment
         }
         #ローカルフォルダから画像を配列にいれる
         #glob.glob("./templates/img/*")
@@ -155,7 +155,7 @@ def manegiment():
         # DB切断
         cnx.close()
     
-    return render_template("Manegiment_Vendingmachine.html", **params)
+    return render_template("managiment_Vendingmachine.html", **params)
 
 # 購入者画面
 @app.route("/", methods=["GET","POST"])

@@ -43,7 +43,7 @@ def change_status_button(status, status_id):
         change_status = '1'
     return change_status, status_id
 
-def check_manegiment_push_button(order_name, order_price, order_number, file_name, publicprivate, new_stock, change_id, status, status_id):
+def check_managiment_push_button(order_name, order_price, order_number, file_name, publicprivate, new_stock, change_id, status, status_id):
     # 商品追加ボタンが押された場合
     if "add" in request.form.keys():
         order_name, order_price, order_number, file_name, publicprivate = add_drink_infomation(order_name, order_price, order_number, file_name, publicprivate)
@@ -99,7 +99,7 @@ def insert_new_status(cnx, change_status, status_id):
     mes = "公開非公開の情報が更新されました。"
     return mes
 
-def select_from_database(cnx, order_manegiment):
+def select_from_database(cnx, order_managiment):
     # クエリ実行
     cursor = cnx.cursor()
     query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
@@ -107,12 +107,12 @@ def select_from_database(cnx, order_manegiment):
     # 実行したクエリ結果の取得
     for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
         item = {"drink_id":drink_id, "drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
-        order_manegiment.append(item)
+        order_managiment.append(item)
 
 # 管理画面
-@app.route("/manegiment", methods=["GET","POST"])
-def manegiment():
-    order_manegiment = []
+@app.route("/managiment", methods=["GET","POST"])
+def managiment():
+    order_managiment = []
     mes = ""
     add_filename = "" #追加商品のパス指定
     filename=""
@@ -122,7 +122,7 @@ def manegiment():
     new_stock, change_id = "", ""
     status, status_id = "", ""
 
-    #order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id = check_manegiment_push_button(order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id)
+    #order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id = check_managiment_push_button(order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id)
     
     # 商品追加ボタンが押された場合
     if "add" in request.form.keys():
@@ -155,11 +155,11 @@ def manegiment():
         if "status" in request.form.keys():
             mes = insert_new_status(cnx, change_status, status_id)
         
-        select_from_database(cnx, order_manegiment)
+        select_from_database(cnx, order_managiment)
 
         params = {
             "mes":mes,
-            "order_manegiment" : order_manegiment
+            "order_managiment" : order_managiment
         }
 
 # 関数化可能？
@@ -175,7 +175,23 @@ def manegiment():
         # DB切断
         cnx.close()
     
-    return render_template("Manegiment_Vendingmachine.html", **params)
+    return render_template("Managiment_Vendingmachine.html", **params)
+
+def check_order_infomation(add_price, buy_order):
+    add_price = request.form.get("add_price", "")
+    buy_order = request.form.get("buy_order", "")
+    return add_price, buy_order
+
+def check_orderdrink_infomation(mes, add_price, buy_drink_number, buy_publicprivate, buy, price):
+    if add_price=="" or str.isnumeric(add_price) == False:
+        return "お金を投入してね。", False
+    if int(buy_drink_number) == 0:
+        return "在庫がありません…申し訳ございません。", False
+    if buy_publicprivate == 0:
+        return "非公開商品になります。申し訳ございません…", False
+    if int(add_price) < buy['price']:
+        return "投入金額がたりませんっっ！", False
+    return mes, True
 
 # 購入者画面
 @app.route("/", methods=["GET","POST"])
@@ -193,15 +209,12 @@ def buy():
     buy_drink_number="" #購入商品の現在庫
     buy_drink_photo = "" #購入商品の写真選択
 
+    order_drink_data = []
+    buy = []
 
     # 購入ボタン選択、投入金額・購入商品情報の取得
-    if "add_price" in request.form.keys() and "buy_order" in request.form.keys():
-        add_price = request.form.get("add_price", "")
-        buy_order = request.form.get("buy_order", "")
-        
-    #print("buy_drink:{}".format(buy_drink))
-    #print("add_price:{}".format(add_price))
-    #print("buy_order:{}".format(buy_order))
+    if "buy_order" in request.form.keys():
+        add_price, buy_order = check_order_infomation(add_price, buy_order)
 
     try:
         # データベースの情報を渡し、接続
@@ -219,9 +232,6 @@ def buy():
         for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
             item = {"drink_id":drink_id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
             order_drink_data.append(item)
-            #print(item["drink_id"])
-
-            #if item["publicprivate"] == 1
 
             # どの商品を選択したのか取得
             # 無選択の場合は、0を取得(intによるエラーを避けるため。)
@@ -234,63 +244,34 @@ def buy():
                 buy_drink_number = buy["drink_number"]
                 buy_publicprivate = buy["publicprivate"]
                 update_drink_number = buy["drink_number"] -1
-        # print(buy_drink_photo)
-        
-        # 購入金額計算
-        if add_price == "":
-            add_price = '0'
 
-        # 投入金額が数字であるかの確認
-        if str.isnumeric(add_price) == True:
-            #  購入ボタンが押された場合
-            if "buy_drink" in request.form.keys():
-                add_price = int(add_price)
-                # 投入金額の確認
-                #   投入金額が商品金額よりも多い（お釣り計算）
-                if add_price >= int(buy["price"]):
-                    # 在庫があるかどうか
-                    if int(buy_drink_number) > 0:
-                        # 公開しているかどうか
-                        if buy_publicprivate == 1:
-                            # 在庫変更
-                            stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
-                            cursor.execute(stock_query)
-                            cnx.commit()
-                            # お釣り計算
-                            if add_price == buy["price"]:
-                                change_mes = "丁度頂戴いたしました！また買ってくださいね！"
-                            else:
-                                change = add_price - buy["price"]
-                        elif buy_publicprivate == 0:
-                            mes = "申し訳ございません。ただいま非公開商品となっております。"
-                    else:
-                        mes = "申し訳ございませんが、売り切れです…。"
+        #  購入ボタンが押された場合
+        if "buy_drink" in request.form.keys():
+            mes, can_buy_order = check_orderdrink_infomation(mes, add_price, buy_drink_number, buy_publicprivate, buy, price) 
+            if can_buy_order:
+                def update_stock(update_drink_number,buy, drink_id):
 
-                #   投入金額が商品金額より少ない
+                # 在庫変更
+                stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
+                cursor.execute(stock_query)
+                cnx.commit()
+                # お釣り計算
+                if int(add_price) == buy["price"]:
+                    change_mes = "丁度頂戴いたしました！また買ってくださいね！"
                 else:
-                    mes = "投入金額が足りていません。"
-                
-                """
-                if isinstance("add_price", int) == True:
-                else:
-                    mes = "入力した数値が整数ではありません。"
-                """
-                
-                params = {
-                "order_drink_data" : order_drink_data,
-                "buy_drink_photo" : buy_drink_photo,
-                "add_price":add_price,
-                "buy_order":buy_order,
-                "mes" : mes,
-                "change_mes" : change_mes,
-                "change" : change,
-                "buy_drink_order" : buy_drink_order
-                }
-                return render_template("Vendingmachine_result.html", **params)      
-
-        # 投入金額が数値以外の場合
-        elif str.isnumeric(add_price) == False:
-            mes = "金額を入力してください。"
+                    change = int(add_price) - buy["price"]
+            
+            params = {
+            "order_drink_data" : order_drink_data,
+            "buy_drink_photo" : buy_drink_photo,
+            "add_price":add_price,
+            "buy_order":buy_order,
+            "mes" : mes,
+            "change_mes" : change_mes,
+            "change" : change,
+            "buy_drink_order" : buy_drink_order
+            }
+            return render_template("Vendingmachine_result.html", **params)      
 
         cursor.execute(query)
 
@@ -313,7 +294,6 @@ def buy():
         else:
             print(err)
     else:
-
         # DB切断
         cnx.close()
 

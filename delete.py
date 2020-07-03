@@ -29,8 +29,8 @@ def insert(order_name, order_price, order_number, file_name):
     cursor.execute(new_stock_query)
     cnx.commit()
 ​
-@app.route("/manegiment", methods=["GET", "POST"])
-def manegiment():
+@app.route("/managiment", methods=["GET", "POST"])
+def managiment():
     #中略
 ​
     # 新商品情報を取得した場合
@@ -66,8 +66,8 @@ def validate_item_param(order_name, order_price, order_number, file_name)]
         cursor.execute(new_stock_query)
         cnx.commit()
 ​
-    @app.route("/manegiment", methods=["GET", "POST"])
-    def manegiment():
+    @app.route("/managiment", methods=["GET", "POST"])
+    def managiment():
         #中略
 ​
         # 新商品情報を取得した場合

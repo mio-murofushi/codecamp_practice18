@@ -11,7 +11,7 @@ htmlファイル3つ、pythonファイル1つで構成されています。
 
 ②「購入ページ」  
 ・ドリンクの購入  
-<http://localhost:5000/manegiment>  
+<http://localhost:5000/managiment>  
 
 ## Folder
 -app.py  

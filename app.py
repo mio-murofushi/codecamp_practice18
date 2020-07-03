@@ -47,15 +47,18 @@ def check_manegiment_push_button(order_name, order_price, order_number, file_nam
     # 商品追加ボタンが押された場合
     if "add" in request.form.keys():
         order_name, order_price, order_number, file_name, publicprivate = add_drink_infomation(order_name, order_price, order_number, file_name, publicprivate)
+        return order_name, order_price, order_number, file_name, publicprivate
 
     # 在庫変更のボタンが押された場合
     if "change" in request.form.keys():
         new_stock, change_id = change_stock_button(new_stock, change_id)
+        return new_stock, change_id
 
     # ステータスの変更ボタンを押された場合
     if "status" in request.form.keys():
         change_status, status_id = change_status_button(status, status_id)
-    return 
+        return change_status, status_id
+    
 
 def check_infomation(order_name, order_price, order_number, file_name):
     if order_name=="" or order_price=="" or order_number=="" or file_name=="":
@@ -118,6 +121,8 @@ def manegiment():
     order_name, order_price, order_number, file_name, publicprivate="","","","",""
     new_stock, change_id = "", ""
     status, status_id = "", ""
+
+    #order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id = check_manegiment_push_button(order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id)
     
     # 商品追加ボタンが押された場合
     if "add" in request.form.keys():
@@ -140,6 +145,7 @@ def manegiment():
             mes, check_insert = check_infomation(order_name, order_price, order_number, file_name)
             if check_insert:
                 mes = insert_new_order(order_name, order_price, publicprivate, file_name, order_number, cnx)
+                file_name.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name.filename))
     
         # 在庫変更のボタンが押された場合
         if "change" in request.form.keys():
@@ -170,3 +176,145 @@ def manegiment():
         cnx.close()
     
     return render_template("Manegiment_Vendingmachine.html", **params)
+
+# 購入者画面
+@app.route("/", methods=["GET","POST"])
+def buy():
+    # 初期値
+    add_price="" #投入金額
+    buy_order="" #購入商品のdrink_id
+    buy_drink="" #購入ボタン選択
+    change = "" #お釣り
+
+    mes = "" #購入確認メッセージ
+    change_mes = "" #お釣りの無い時のメッセージ
+    
+    buy_drink_order="" #購入商品
+    buy_drink_number="" #購入商品の現在庫
+    buy_drink_photo = "" #購入商品の写真選択
+
+
+    # 購入ボタン選択、投入金額・購入商品情報の取得
+    if "add_price" in request.form.keys() and "buy_order" in request.form.keys():
+        add_price = request.form.get("add_price", "")
+        buy_order = request.form.get("buy_order", "")
+        
+    #print("buy_drink:{}".format(buy_drink))
+    #print("add_price:{}".format(add_price))
+    #print("buy_order:{}".format(buy_order))
+
+    try:
+        # データベースの情報を渡し、接続
+        cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
+
+        # クエリ実行
+        cursor = cnx.cursor()
+        query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
+        cursor.execute(query)
+
+        order_drink_data = []
+        buy = []
+
+        # 実行したクエリ結果の取得
+        for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
+            item = {"drink_id":drink_id,"drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
+            order_drink_data.append(item)
+            #print(item["drink_id"])
+
+            #if item["publicprivate"] == 1
+
+            # どの商品を選択したのか取得
+            # 無選択の場合は、0を取得(intによるエラーを避けるため。)
+            if buy_order == "":
+                buy_order = '0'
+            if item["drink_id"] == int(buy_order):
+                buy = item
+                buy_drink_photo = item["drink_photo"]
+                buy_drink_order = item["drink_name"]
+                buy_drink_number = buy["drink_number"]
+                buy_publicprivate = buy["publicprivate"]
+                update_drink_number = buy["drink_number"] -1
+        # print(buy_drink_photo)
+        
+        # 購入金額計算
+        if add_price == "":
+            add_price = '0'
+
+        # 投入金額が数字であるかの確認
+        if str.isnumeric(add_price) == True:
+            #  購入ボタンが押された場合
+            if "buy_drink" in request.form.keys():
+                add_price = int(add_price)
+                # 投入金額の確認
+                #   投入金額が商品金額よりも多い（お釣り計算）
+                if add_price >= int(buy["price"]):
+                    # 在庫があるかどうか
+                    if int(buy_drink_number) > 0:
+                        # 公開しているかどうか
+                        if buy_publicprivate == 1:
+                            # 在庫変更
+                            stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
+                            cursor.execute(stock_query)
+                            cnx.commit()
+                            # お釣り計算
+                            if add_price == buy["price"]:
+                                change_mes = "丁度頂戴いたしました！また買ってくださいね！"
+                            else:
+                                change = add_price - buy["price"]
+                        elif buy_publicprivate == 0:
+                            mes = "申し訳ございません。ただいま非公開商品となっております。"
+                    else:
+                        mes = "申し訳ございませんが、売り切れです…。"
+
+                #   投入金額が商品金額より少ない
+                else:
+                    mes = "投入金額が足りていません。"
+                
+                """
+                if isinstance("add_price", int) == True:
+                else:
+                    mes = "入力した数値が整数ではありません。"
+                """
+                
+                params = {
+                "order_drink_data" : order_drink_data,
+                "buy_drink_photo" : buy_drink_photo,
+                "add_price":add_price,
+                "buy_order":buy_order,
+                "mes" : mes,
+                "change_mes" : change_mes,
+                "change" : change,
+                "buy_drink_order" : buy_drink_order
+                }
+                return render_template("Vendingmachine_result.html", **params)      
+
+        # 投入金額が数値以外の場合
+        elif str.isnumeric(add_price) == False:
+            mes = "金額を入力してください。"
+
+        cursor.execute(query)
+
+        params = {
+            "order_drink_data" : order_drink_data,
+            "buy_drink_photo" : buy_drink_photo,
+            "add_price":add_price,
+            "buy_order":buy_order,
+            "mes" : mes
+        }
+
+        #ローカルフォルダから画像を配列にいれる
+        #glob.glob("./templates/img/*")
+
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("ユーザ名かパスワードに問題があります。")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("データベースが存在しません。")
+        else:
+            print(err)
+    else:
+
+        # DB切断
+        cnx.close()
+
+    return render_template("Vendingmachine_buy.html", **params)

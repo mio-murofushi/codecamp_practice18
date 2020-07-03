@@ -193,6 +193,22 @@ def check_orderdrink_infomation(mes, add_price, buy_drink_number, buy_publicpriv
         return "投入金額がたりませんっっ！", False
     return mes, True
 
+def update_stock(cnx, update_drink_number,buy, drink_id):
+    # 在庫変更
+    cursor = cnx.cursor()
+    stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
+    cursor.execute(stock_query)
+    cnx.commit()
+
+def calculation_of_change(add_price, buy, price):
+    # お釣り計算
+    if int(add_price) == buy["price"]:
+        change_mes = "丁度頂戴いたしました！また買ってくださいね！"
+        change=""
+    else:
+        change = int(add_price) - buy["price"]
+    return change_mes, change
+
 # 購入者画面
 @app.route("/", methods=["GET","POST"])
 def buy():
@@ -249,17 +265,9 @@ def buy():
         if "buy_drink" in request.form.keys():
             mes, can_buy_order = check_orderdrink_infomation(mes, add_price, buy_drink_number, buy_publicprivate, buy, price) 
             if can_buy_order:
-                def update_stock(update_drink_number,buy, drink_id):
+                update_stock(cnx, update_drink_number,buy, drink_id)
+                change_mes, change = calculation_of_change(add_price, buy, price)
 
-                # 在庫変更
-                stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
-                cursor.execute(stock_query)
-                cnx.commit()
-                # お釣り計算
-                if int(add_price) == buy["price"]:
-                    change_mes = "丁度頂戴いたしました！また買ってくださいね！"
-                else:
-                    change = int(add_price) - buy["price"]
             
             params = {
             "order_drink_data" : order_drink_data,

@@ -53,7 +53,3 @@ INSERT INTO buy_list(
 (1),
 (2),
 (3);
-
-UPDATE drink_data
-SET drink_number = (-1) 
-WHERE drink_id = buy["drink_id"]

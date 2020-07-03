@@ -19,6 +19,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = './static/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# 管理者側
 def add_drink_infomation(order_name, order_price, order_number, file_name, publicprivate):
     order_name = request.form.get("order_name", "")
     order_price = request.form.get("order_price", "")
@@ -42,23 +43,6 @@ def change_status_button(status, status_id):
     elif status == '0':
         change_status = '1'
     return change_status, status_id
-
-def check_managiment_push_button(order_name, order_price, order_number, file_name, publicprivate, new_stock, change_id, status, status_id):
-    # 商品追加ボタンが押された場合
-    if "add" in request.form.keys():
-        order_name, order_price, order_number, file_name, publicprivate = add_drink_infomation(order_name, order_price, order_number, file_name, publicprivate)
-        return order_name, order_price, order_number, file_name, publicprivate
-
-    # 在庫変更のボタンが押された場合
-    if "change" in request.form.keys():
-        new_stock, change_id = change_stock_button(new_stock, change_id)
-        return new_stock, change_id
-
-    # ステータスの変更ボタンを押された場合
-    if "status" in request.form.keys():
-        change_status, status_id = change_status_button(status, status_id)
-        return change_status, status_id
-    
 
 def check_infomation(order_name, order_price, order_number, file_name):
     if order_name=="" or order_price=="" or order_number=="" or file_name=="":
@@ -99,19 +83,42 @@ def insert_new_status(cnx, change_status, status_id):
     mes = "公開非公開の情報が更新されました。"
     return mes
 
-def select_from_database(cnx, order_managiment):
-    # クエリ実行
+# ユーザー側
+def check_order_infomation(add_price, buy_order):
+    add_price = request.form.get("add_price", "")
+    buy_order = request.form.get("buy_order", "")
+    return add_price, buy_order
+
+def check_orderdrink_infomation(mes, add_price, buy_drink_number, buy_publicprivate, buy, price):
+    if add_price=="" or str.isnumeric(add_price) == False:
+        return "お金を投入してね。", False
+    if int(buy_drink_number) == 0:
+        return "在庫がありません…申し訳ございません。", False
+    if buy_publicprivate == 0:
+        return "非公開商品になります。申し訳ございません…", False
+    if int(add_price) < buy['price']:
+        return "投入金額がたりませんっっ！", False
+    return mes, True
+
+def update_stock(cnx, update_drink_number,buy, drink_id):
+    # 在庫変更
     cursor = cnx.cursor()
-    query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
-    cursor.execute(query)
-    # 実行したクエリ結果の取得
-    for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
-        item = {"drink_id":drink_id, "drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
-        order_managiment.append(item)
+    stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
+    cursor.execute(stock_query)
+    cnx.commit()
+
+def calculation_of_change(add_price, buy, price):
+    # お釣り計算
+    if int(add_price) == buy["price"]:
+        change_mes = "丁度頂戴いたしました！また買ってくださいね！"
+        change=""
+    else:
+        change = int(add_price) - buy["price"]
+    return change_mes, change
 
 # 管理画面
 @app.route("/managiment", methods=["GET","POST"])
-def managiment():
+def managiment_main():
     order_managiment = []
     mes = ""
     add_filename = "" #追加商品のパス指定
@@ -122,8 +129,6 @@ def managiment():
     new_stock, change_id = "", ""
     status, status_id = "", ""
 
-    #order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id = check_managiment_push_button(order_name, order_price, order_number, file_name, publicprivate、new_stock, change_id、change_status, status_id)
-    
     # 商品追加ボタンが押された場合
     if "add" in request.form.keys():
         order_name, order_price, order_number, file_name, publicprivate = add_drink_infomation(order_name, order_price, order_number, file_name, publicprivate)
@@ -177,54 +182,13 @@ def managiment():
     
     return render_template("Managiment_Vendingmachine.html", **params)
 
-def check_order_infomation(add_price, buy_order):
-    add_price = request.form.get("add_price", "")
-    buy_order = request.form.get("buy_order", "")
-    return add_price, buy_order
-
-def check_orderdrink_infomation(mes, add_price, buy_drink_number, buy_publicprivate, buy, price):
-    if add_price=="" or str.isnumeric(add_price) == False:
-        return "お金を投入してね。", False
-    if int(buy_drink_number) == 0:
-        return "在庫がありません…申し訳ございません。", False
-    if buy_publicprivate == 0:
-        return "非公開商品になります。申し訳ございません…", False
-    if int(add_price) < buy['price']:
-        return "投入金額がたりませんっっ！", False
-    return mes, True
-
-def update_stock(cnx, update_drink_number,buy, drink_id):
-    # 在庫変更
-    cursor = cnx.cursor()
-    stock_query = F"UPDATE manegiment_drink_number SET drink_number= {update_drink_number} WHERE drink_id = {buy['drink_id']}"
-    cursor.execute(stock_query)
-    cnx.commit()
-
-def calculation_of_change(add_price, buy, price):
-    # お釣り計算
-    if int(add_price) == buy["price"]:
-        change_mes = "丁度頂戴いたしました！また買ってくださいね！"
-        change=""
-    else:
-        change = int(add_price) - buy["price"]
-    return change_mes, change
-
 # 購入者画面
 @app.route("/", methods=["GET","POST"])
-def buy():
+def user_main():
     # 初期値
-    add_price="" #投入金額
-    buy_order="" #購入商品のdrink_id
-    buy_drink="" #購入ボタン選択
-    change = "" #お釣り
-
-    mes = "" #購入確認メッセージ
-    change_mes = "" #お釣りの無い時のメッセージ
-    
-    buy_drink_order="" #購入商品
-    buy_drink_number="" #購入商品の現在庫
-    buy_drink_photo = "" #購入商品の写真選択
-
+    add_price, buy_order, buy_drink, change = "", "", "", ""
+    mes, change_mes = "", ""
+    buy_drink_order, buy_drink_number, buy_drink_photo = "", "", ""
     order_drink_data = []
     buy = []
 
@@ -267,7 +231,6 @@ def buy():
             if can_buy_order:
                 update_stock(cnx, update_drink_number,buy, drink_id)
                 change_mes, change = calculation_of_change(add_price, buy, price)
-
             
             params = {
             "order_drink_data" : order_drink_data,
@@ -290,9 +253,6 @@ def buy():
             "buy_order":buy_order,
             "mes" : mes
         }
-
-        #ローカルフォルダから画像を配列にいれる
-        #glob.glob("./templates/img/*")
 
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

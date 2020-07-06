@@ -1,4 +1,7 @@
 # Vending Machine program
+### 修正版 2020.07.06
+app.py内を関数化しました。  
+
 ## 18章課題 実習”自動販売機”
 研修で作成している自動販売機のプログラムです。  
 htmlファイル3つ、pythonファイル1つで構成されています。
@@ -24,13 +27,11 @@ htmlファイル3つ、pythonファイル1つで構成されています。
 htmlファイルが入っています。  
 
 ## Installation
-・Flask  
+・必要なものはrequirements.txtに記載してあります。  
 ・Python 3.8.3  
-・mysql  
 
 ## Usage
-python3 -m venv venv  
-. venv/bin/activate  
+最初にinitialize.sqlを使用して、DBの作成をしてください。
   
 export FLASK_APP=app  
 export FLASK_ENV=development  

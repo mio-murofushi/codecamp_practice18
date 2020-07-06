@@ -83,6 +83,16 @@ def insert_new_status(cnx, change_status, status_id):
     mes = "公開非公開の情報が更新されました。"
     return mes
 
+def query_execution(cnx, order_managiment):
+    # クエリ実行
+    cursor = cnx.cursor()
+    query = 'SELECT drink_data.drink_id, drink_data.drink_photo, drink_data.drink_name, drink_data.price, manegiment_drink_number.drink_number, drink_data.publicprivate FROM drink_data JOIN manegiment_drink_number ON drink_data.drink_id = manegiment_drink_number.drink_id' #実行するクエリ
+    cursor.execute(query)
+    # 実行したクエリ結果の取得
+    for (drink_id, drink_photo, drink_name, price, drink_number, publicprivate) in cursor:
+        item = {"drink_id":drink_id, "drink_photo":drink_photo, "drink_name":drink_name, "price":price, "drink_number":drink_number, "publicprivate":publicprivate}
+        order_managiment.append(item)
+
 # ユーザー側
 def check_order_infomation(add_price, buy_order):
     add_price = request.form.get("add_price", "")
@@ -159,14 +169,13 @@ def managiment_main():
         # 公開非公開のボタンを押された場合
         if "status" in request.form.keys():
             mes = insert_new_status(cnx, change_status, status_id)
-        
-        select_from_database(cnx, order_managiment)
 
         params = {
             "mes":mes,
             "order_managiment" : order_managiment
         }
-
+        
+        query_execution(cnx, order_managiment)
 # 関数化可能？
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -176,10 +185,8 @@ def managiment_main():
         else:
             print(err)
     else:
-
         # DB切断
         cnx.close()
-    
     return render_template("Managiment_Vendingmachine.html", **params)
 
 # 購入者画面
